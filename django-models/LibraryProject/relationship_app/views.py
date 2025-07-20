@@ -46,22 +46,26 @@ def logout_view(request):
     logout(request)
     return render(request, 'relationship_app/logout.html')
 
-def check_role(role):
-    def decorator(user):
-        return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == role
-    return user_passes_test(decorator)
+def is_admin(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
+def is_librarian(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
+
+@user_passes_test(is_admin)
 @login_required
-@check_role('Admin')
 def admin_view(request):
     return render(request, 'relationship_app/admin_view.html')
 
+@user_passes_test(is_librarian)
 @login_required
-@check_role('Librarian')
 def librarian_view(request):
     return render(request, 'relationship_app/librarian_view.html')
 
+@user_passes_test(is_member)
 @login_required
-@check_role('Member')
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
