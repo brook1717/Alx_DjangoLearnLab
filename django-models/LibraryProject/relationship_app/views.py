@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from .models import Book
+from .models import Book, UserProfile
 from django.views.generic.detail import DetailView
 from .models import Library
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Function-based view to list all books
 def list_books(request):
@@ -46,3 +46,22 @@ def logout_view(request):
     logout(request)
     return render(request, 'relationship_app/logout.html')
 
+def check_role(role):
+    def decorator(user):
+        return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == role
+    return user_passes_test(decorator)
+
+@login_required
+@check_role('Admin')
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+@login_required
+@check_role('Librarian')
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+@login_required
+@check_role('Member')
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
