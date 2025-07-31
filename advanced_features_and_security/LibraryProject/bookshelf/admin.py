@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 # Register your models here.
 from .models import Book
 
@@ -18,3 +20,20 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+
+
+def setup_groups():
+    content_type = ContentType.objects.get_for_model(Book)
+
+    permissions = {
+        "Viewers": ["can_view"],
+        "Editors": ["can_view", "can_create", "can_edit"],
+        "Admins": ["can_view", "can_create", "can_edit", "can_delete"]
+    }
+
+    for group_name, perm_codes in permissions.items():
+        group, created = Group.objects.get_or_create(name=group_name)
+        for perm_code in perm_codes:
+            perm = Permission.objects.get(codename=perm_code, content_type=content_type)
+            group.permissions.add(perm)
