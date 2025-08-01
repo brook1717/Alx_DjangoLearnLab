@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book
+from .forms import ExampleForm
 
 from .forms import BookForm
 # Create your views here.
@@ -38,4 +39,20 @@ def add_book(request):
             return redirect('book_list')
     else:
         form = BookForm()
+    return render(request, 'bookshelf/form_example.html', {'form': form})
+
+
+
+def example_form_view(request):
+    if request.method == 'POST':
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Normally process form.cleaned_data here
+            return render(request, 'bookshelf/form_example.html', {
+                'form': form,
+                'success': True
+            })
+    else:
+        form = ExampleForm()
+
     return render(request, 'bookshelf/form_example.html', {'form': form})
