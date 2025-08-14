@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}My Profile – Django Blog{% endblock %}
+{% block content %}
+<h1>My Profile</h1>
+<div class="profile">
+  <img src="{{ user.profile.image.url if user.profile.image else static 'img/default-avatar.png' }}" alt="Avatar" class="avatar">
+  <div>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    {% if user.profile.bio %}
+      <p><strong>Bio:</strong> {{ user.profile.bio }}</p>
+    {% endif %}
+    <a class="btn" href="{% url 'profile_edit' %}">Edit Profile</a>
+  </div>
+</div>
+{% endblock %}
